@@ -34,10 +34,15 @@
 
 (defvar org-babel-default-header-args:mermaid
   '((:results . "file") (:exports . "results"))
-  "Default arguments for evaluatiing a mermaid source block.")
+  "Default arguments for evaluating a mermaid source block.")
 
 (defcustom ob-mermaid-cli-path nil
   "Path to mermaid.cli executable."
+  :group 'org-babel
+  :type 'string)
+
+(defcustom ob-mermaid-default-directory nil
+  "Path to default directory for Mermaid output."
   :group 'org-babel
   :type 'string)
 
@@ -57,7 +62,9 @@
                    (error "`ob-mermaid-cli-path' is not set and mmdc is not in `exec-path'")))
          (cmd (concat (shell-quote-argument (expand-file-name mmdc))
                       " -i " (org-babel-process-file-name temp-file)
-                      " -o " (org-babel-process-file-name out-file)
+                      " -o " (org-babel-process-file-name (if ob-mermaid-default-directory
+                                                              (concat ob-mermaid-default-directory "/" out-file)
+                                                            out-file))
 		      (when theme
 			(concat " -t " theme))
 		      (when background-color
